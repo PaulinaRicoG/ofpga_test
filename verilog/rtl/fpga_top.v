@@ -1,89 +1,69 @@
-// SPDX-FileCopyrightText: 2020 Efabless Corporation
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// SPDX-License-Identifier: Apache-2.0
+//-------------------------------------------
+//	FPGA Synthesizable Verilog Netlist
+//	Description: Top-level Verilog module for FPGA
+//	Author: Xifan TANG
+//	Organization: University of Utah
+//	Date: Thu Apr 27 17:26:41 2023
+//-------------------------------------------
+//----- Time scale -----
+`timescale 1ns / 1ps
 
+//----- Default net type -----
 `default_nettype none
-/*
- *-------------------------------------------------------------
- *
- * user_proj_example
- *
- * This is an example of a (trivially simple) user project,
- * showing how the user project can connect to the logic
- * analyzer, the wishbone bus, and the I/O pads.
- *
- * This project generates an integer count, which is output
- * on the user area GPIO pads (digital output only).  The
- * wishbone connection allows the project to be controlled
- * (start and stop) from the management SoC program.
- *
- * See the testbenches in directory "mprj_counter" for the
- * example programs that drive this user project.  The three
- * testbenches are "io_ports", "la_test1", and "la_test2".
- *
- *-------------------------------------------------------------
- */
 
-module user_proj_example #(
-    parameter BITS = 32
-)(
+// ----- Verilog module for fpga_top -----
+module user_proj_example(
 `ifdef USE_POWER_PINS
     inout vccd1,	// User area 1 1.8V supply
     inout vssd1,	// User area 1 digital ground
 `endif
 
-    // Wishbone Slave ports (WB MI A)
-    input wb_clk_i,
-    input wb_rst_i,
-    input wbs_stb_i,
-    input wbs_cyc_i,
-    input wbs_we_i,
-    input [3:0] wbs_sel_i,
-    input [31:0] wbs_dat_i,
-    input [31:0] wbs_adr_i,
-    output wbs_ack_o,
-    output [31:0] wbs_dat_o,
 
-    // Logic Analyzer Signals
-    input  [127:0] la_data_in,
-    output [127:0] la_data_out,
-    input  [127:0] la_oenb,
+                //----- GLOBAL PORTS -----
+                input wb_clk_i,
+                input wb_rst_i,
+                input wbs_stb_i,
+                input wbs_cyc_i,
+                input wbs_we_i,
+                input [3:0] wbs_sel_i,
+                input [31:0] wbs_dat_i,
+                input [31:0] wbs_adr_i,
+                output wbs_ack_o,
+                output [31:0] wbs_dat_o,
 
-    // IOs
-    input  [15:0] io_in,
-    output [15:0] io_out,
-    output [15:0] io_oeb,
+                // Logic Analyzer Signals
+                input  [127:0] la_data_in,
+                output [127:0] la_data_out,
+                input  [127:0] la_oenb,
 
-    // IRQ
-    output [2:0] irq
-);
-    wire prog_clk;
-    wire Test_en;
+                // IOs
+                input  [15:0] io_in,
+                output [15:0] io_out,
+                output [15:0] io_oeb,
 
-    wire [15:0] io_in;
-    wire [15:0] io_out;
-    wire [15:0] io_oeb;
+                // IRQ
+                output [2:0] irq);
 
-    wire  reset; 
-    wire  set;
-    wire  clk;
-
-    wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_IN;
-    wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_OUT;
-    wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_DIR;
-    wire ccff_head;
-    wire ccff_tail;
+//----- GLOBAL PORTS -----
+wire [0:0] prog_clk;
+//----- GLOBAL PORTS -----
+wire [0:0] Test_en;
+//----- GLOBAL PORTS -----
+wire [0:0] reset;
+//----- GLOBAL PORTS -----
+wire [0:0] set;
+//----- GLOBAL PORTS -----
+wire [0:0] clk;
+//----- GPIN PORTS -----
+wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_IN;
+//----- GPOUT PORTS -----
+wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_OUT;
+//----- GPOUT PORTS -----
+wire [0:35] gfpga_pad_EMBEDDED_IO_SOC_DIR;
+//----- INPUT PORTS -----
+wire [0:0] ccff_head;
+//----- OUTPUT PORTS -----
+wire [0:0] ccff_tail;
 
     assign io_in[5] = prog_clk;
     assign io_in[6] = Test_en;
@@ -96,65 +76,6 @@ module user_proj_example #(
     assign la_data_out [36:71] = gfpga_pad_EMBEDDED_IO_SOC_DIR [0:35];
     assign io_in[10] = ccff_head;
     assign io_out[11] = ccff_tail;
-
-    fpga_top mprj(
-        `ifdef USE_POWER_PINS
-        .vccd1(vccd1),     
-        .vssd1(vssd1),
-        `endif
-        .prog_clk(prog_clk),
-        .Test_en(Test_en),
-        .reset(reset),
-        .set(set),
-        .clk(clk),
-        .gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN),
-        .gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT),
-        .gfpga_pad_EMBEDDED_IO_SOC_DIR(gfpga_pad_EMBEDDED_IO_SOC_DIR),
-        .ccff_head(ccff_head),
-        .ccff_tail(ccff_tail)
-    );
-
-endmodule
-
-
-
-// ----- Verilog module for fpga_top -----
-module fpga_top(
-                `ifdef USE_POWER_PINS
-                    inout vccd1,	// User area 1 1.8V supply
-                    inout vssd1,	// User area 1 digital ground
-                `endif
-                prog_clk,
-                Test_en,
-                reset,
-                set,
-                clk,
-                gfpga_pad_EMBEDDED_IO_SOC_IN,
-                gfpga_pad_EMBEDDED_IO_SOC_OUT,
-                gfpga_pad_EMBEDDED_IO_SOC_DIR,
-                ccff_head,
-                ccff_tail);
-
-//----- GLOBAL PORTS -----
-input [0:0] prog_clk;
-//----- GLOBAL PORTS -----
-input [0:0] Test_en;
-//----- GLOBAL PORTS -----
-input [0:0] reset;
-//----- GLOBAL PORTS -----
-input [0:0] set;
-//----- GLOBAL PORTS -----
-input [0:0] clk;
-//----- GPIN PORTS -----
-input [0:35] gfpga_pad_EMBEDDED_IO_SOC_IN;
-//----- GPOUT PORTS -----
-output [0:35] gfpga_pad_EMBEDDED_IO_SOC_OUT;
-//----- GPOUT PORTS -----
-output [0:35] gfpga_pad_EMBEDDED_IO_SOC_DIR;
-//----- INPUT PORTS -----
-input [0:0] ccff_head;
-//----- OUTPUT PORTS -----
-output [0:0] ccff_tail;
 
 //----- BEGIN wire-connection ports -----
 //----- END wire-connection ports -----
@@ -1347,6 +1268,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 // ----- END Local output short connections -----
 
 	grid_io_top_top grid_io_top_top_1__5_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[0]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[0]),
@@ -1357,6 +1282,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_top_top_0_ccff_tail));
 
 	grid_io_top_top grid_io_top_top_2__5_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[1]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[1]),
@@ -1367,6 +1296,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_top_top_1_ccff_tail));
 
 	grid_io_top_top grid_io_top_top_3__5_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[2]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[2]),
@@ -1377,6 +1310,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_top_top_2_ccff_tail));
 
 	grid_io_top_top grid_io_top_top_4__5_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[3]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[3]),
@@ -1387,6 +1324,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_top_top_3_ccff_tail));
 
 	grid_io_right_right grid_io_right_right_5__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[4]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[4]),
@@ -1397,6 +1338,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_right_right_0_ccff_tail));
 
 	grid_io_right_right grid_io_right_right_5__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[5]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[5]),
@@ -1407,6 +1352,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_right_right_1_ccff_tail));
 
 	grid_io_right_right grid_io_right_right_5__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[6]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[6]),
@@ -1417,6 +1366,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_right_right_2_ccff_tail));
 
 	grid_io_right_right grid_io_right_right_5__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[7]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[7]),
@@ -1427,6 +1380,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_right_right_3_ccff_tail));
 
 	grid_io_bottom_bottom grid_io_bottom_bottom_4__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[8:13]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[8:13]),
@@ -1447,6 +1404,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_bottom_bottom_0_ccff_tail));
 
 	grid_io_bottom_bottom grid_io_bottom_bottom_3__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[14:19]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[14:19]),
@@ -1467,6 +1428,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_bottom_bottom_1_ccff_tail));
 
 	grid_io_bottom_bottom grid_io_bottom_bottom_2__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[20:25]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[20:25]),
@@ -1487,6 +1452,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_bottom_bottom_2_ccff_tail));
 
 	grid_io_bottom_bottom grid_io_bottom_bottom_1__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[26:31]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[26:31]),
@@ -1507,6 +1476,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_bottom_bottom_3_ccff_tail));
 
 	grid_io_left_left grid_io_left_left_0__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[32]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[32]),
@@ -1517,6 +1490,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_left_left_0_ccff_tail));
 
 	grid_io_left_left grid_io_left_left_0__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[33]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[33]),
@@ -1527,6 +1504,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_left_left_1_ccff_tail));
 
 	grid_io_left_left grid_io_left_left_0__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[34]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[34]),
@@ -1537,6 +1518,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_left_left_2_ccff_tail));
 
 	grid_io_left_left grid_io_left_left_0__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.gfpga_pad_EMBEDDED_IO_SOC_IN(gfpga_pad_EMBEDDED_IO_SOC_IN[35]),
 		.gfpga_pad_EMBEDDED_IO_SOC_OUT(gfpga_pad_EMBEDDED_IO_SOC_OUT[35]),
@@ -1547,6 +1532,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_io_left_left_3_ccff_tail));
 
 	grid_clb grid_clb_1__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1609,6 +1598,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_0_ccff_tail));
 
 	grid_clb grid_clb_1__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1671,6 +1664,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_1_ccff_tail));
 
 	grid_clb grid_clb_1__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1733,6 +1730,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_2_ccff_tail));
 
 	grid_clb grid_clb_1__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1795,6 +1796,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(ccff_tail));
 
 	grid_clb grid_clb_2__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1857,6 +1862,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_4_ccff_tail));
 
 	grid_clb grid_clb_2__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1919,6 +1928,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_5_ccff_tail));
 
 	grid_clb grid_clb_2__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -1981,6 +1994,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_6_ccff_tail));
 
 	grid_clb grid_clb_2__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2043,6 +2060,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_7_ccff_tail));
 
 	grid_clb grid_clb_3__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2105,6 +2126,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_8_ccff_tail));
 
 	grid_clb grid_clb_3__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2167,6 +2192,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_9_ccff_tail));
 
 	grid_clb grid_clb_3__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2229,6 +2258,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_10_ccff_tail));
 
 	grid_clb grid_clb_3__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2291,6 +2324,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_11_ccff_tail));
 
 	grid_clb grid_clb_4__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2353,6 +2390,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_12_ccff_tail));
 
 	grid_clb grid_clb_4__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2415,6 +2456,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_13_ccff_tail));
 
 	grid_clb grid_clb_4__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2477,6 +2522,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_14_ccff_tail));
 
 	grid_clb grid_clb_4__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.Test_en(Test_en),
 		.reset(reset),
@@ -2539,6 +2588,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(grid_clb_15_ccff_tail));
 
 	sb_0__0_ sb_0__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_0__1__0_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_left_left_0_right_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -2555,6 +2608,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_0__0__0_ccff_tail));
 
 	sb_0__1_ sb_0__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_0__1__1_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_left_left_1_right_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -2576,6 +2633,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_0__1__0_ccff_tail));
 
 	sb_0__1_ sb_0__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_0__1__2_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_left_left_2_right_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -2597,6 +2658,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_0__1__1_ccff_tail));
 
 	sb_0__1_ sb_0__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_0__1__3_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_left_left_3_right_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -2618,6 +2683,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_0__1__2_ccff_tail));
 
 	sb_0__4_ sb_0__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_right_in(cbx_1__4__0_chanx_left_out[0:10]),
 		.right_top_grid_bottom_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_top_top_0_bottom_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -2637,6 +2706,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_0__4__0_ccff_tail));
 
 	sb_1__0_ sb_1__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__0_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_0_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2667,6 +2740,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__0__0_ccff_tail));
 
 	sb_1__0_ sb_2__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__4_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_4_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2697,6 +2774,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__0__1_ccff_tail));
 
 	sb_1__0_ sb_3__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__8_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_8_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2727,6 +2808,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__0__2_ccff_tail));
 
 	sb_1__1_ sb_1__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__1_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_1_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2770,6 +2855,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__0_ccff_tail));
 
 	sb_1__1_ sb_1__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__2_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_2_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2813,6 +2902,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__1_ccff_tail));
 
 	sb_1__1_ sb_1__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__3_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_3_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2856,6 +2949,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__2_ccff_tail));
 
 	sb_1__1_ sb_2__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__5_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_5_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2899,6 +2996,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__3_ccff_tail));
 
 	sb_1__1_ sb_2__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__6_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_6_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2942,6 +3043,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__4_ccff_tail));
 
 	sb_1__1_ sb_2__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__7_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_7_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -2985,6 +3090,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__5_ccff_tail));
 
 	sb_1__1_ sb_3__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__9_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_9_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3028,6 +3137,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__6_ccff_tail));
 
 	sb_1__1_ sb_3__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__10_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_10_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3071,6 +3184,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__7_ccff_tail));
 
 	sb_1__1_ sb_3__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__11_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_11_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3114,6 +3231,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__1__8_ccff_tail));
 
 	sb_1__4_ sb_1__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_right_in(cbx_1__4__1_chanx_left_out[0:10]),
 		.right_top_grid_bottom_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_top_top_1_bottom_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -3150,6 +3271,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__4__0_ccff_tail));
 
 	sb_1__4_ sb_2__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_right_in(cbx_1__4__2_chanx_left_out[0:10]),
 		.right_top_grid_bottom_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_top_top_2_bottom_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -3186,6 +3311,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__4__1_ccff_tail));
 
 	sb_1__4_ sb_3__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_right_in(cbx_1__4__3_chanx_left_out[0:10]),
 		.right_top_grid_bottom_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_top_top_3_bottom_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -3222,6 +3351,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_1__4__2_ccff_tail));
 
 	sb_4__0_ sb_4__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__12_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_12_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3245,6 +3378,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_4__0__0_ccff_tail));
 
 	sb_4__1_ sb_4__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__13_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_13_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3280,6 +3417,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_4__1__0_ccff_tail));
 
 	sb_4__1_ sb_4__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__14_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_14_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3315,6 +3456,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_4__1__1_ccff_tail));
 
 	sb_4__1_ sb_4__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_top_in(cby_1__1__15_chany_bottom_out[0:10]),
 		.top_left_grid_right_width_0_height_0_subtile_0__pin_O_8_(grid_clb_15_right_width_0_height_0_subtile_0__pin_O_8_),
@@ -3350,6 +3495,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_4__1__2_ccff_tail));
 
 	sb_4__4_ sb_4__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(cby_1__1__15_chany_top_out[0:10]),
 		.bottom_right_grid_left_width_0_height_0_subtile_0__pin_inpad_0_(grid_io_right_right_0_left_width_0_height_0_subtile_0__pin_inpad_0_),
@@ -3376,6 +3525,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(sb_4__4__0_ccff_tail));
 
 	cbx_1__0_ cbx_1__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_0__0__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__0__0_chanx_left_out[0:10]),
@@ -3391,6 +3544,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__0__0_ccff_tail));
 
 	cbx_1__0_ cbx_2__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__0__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__0__1_chanx_left_out[0:10]),
@@ -3406,6 +3563,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__0__1_ccff_tail));
 
 	cbx_1__0_ cbx_3__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__0__1_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__0__2_chanx_left_out[0:10]),
@@ -3421,6 +3582,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__0__2_ccff_tail));
 
 	cbx_1__0_ cbx_4__0_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__0__2_chanx_right_out[0:10]),
 		.chanx_right_in(sb_4__0__0_chanx_left_out[0:10]),
@@ -3436,6 +3601,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__0__3_ccff_tail));
 
 	cbx_1__1_ cbx_1__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_0__1__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__0_chanx_left_out[0:10]),
@@ -3461,6 +3630,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__0_ccff_tail));
 
 	cbx_1__1_ cbx_1__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_0__1__1_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__1_chanx_left_out[0:10]),
@@ -3486,6 +3659,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__1_ccff_tail));
 
 	cbx_1__1_ cbx_1__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_0__1__2_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__2_chanx_left_out[0:10]),
@@ -3511,6 +3688,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__2_ccff_tail));
 
 	cbx_1__1_ cbx_2__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__3_chanx_left_out[0:10]),
@@ -3536,6 +3717,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__3_ccff_tail));
 
 	cbx_1__1_ cbx_2__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__1_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__4_chanx_left_out[0:10]),
@@ -3561,6 +3746,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__4_ccff_tail));
 
 	cbx_1__1_ cbx_2__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__2_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__5_chanx_left_out[0:10]),
@@ -3586,6 +3775,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__5_ccff_tail));
 
 	cbx_1__1_ cbx_3__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__3_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__6_chanx_left_out[0:10]),
@@ -3611,6 +3804,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__6_ccff_tail));
 
 	cbx_1__1_ cbx_3__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__4_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__7_chanx_left_out[0:10]),
@@ -3636,6 +3833,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__7_ccff_tail));
 
 	cbx_1__1_ cbx_3__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__5_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__1__8_chanx_left_out[0:10]),
@@ -3661,6 +3862,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__8_ccff_tail));
 
 	cbx_1__1_ cbx_4__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__6_chanx_right_out[0:10]),
 		.chanx_right_in(sb_4__1__0_chanx_left_out[0:10]),
@@ -3686,6 +3891,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__9_ccff_tail));
 
 	cbx_1__1_ cbx_4__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__7_chanx_right_out[0:10]),
 		.chanx_right_in(sb_4__1__1_chanx_left_out[0:10]),
@@ -3711,6 +3920,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__10_ccff_tail));
 
 	cbx_1__1_ cbx_4__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__1__8_chanx_right_out[0:10]),
 		.chanx_right_in(sb_4__1__2_chanx_left_out[0:10]),
@@ -3736,6 +3949,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__1__11_ccff_tail));
 
 	cbx_1__4_ cbx_1__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_0__4__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__4__0_chanx_left_out[0:10]),
@@ -3762,6 +3979,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__4__0_ccff_tail));
 
 	cbx_1__4_ cbx_2__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__4__0_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__4__1_chanx_left_out[0:10]),
@@ -3788,6 +4009,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__4__1_ccff_tail));
 
 	cbx_1__4_ cbx_3__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__4__1_chanx_right_out[0:10]),
 		.chanx_right_in(sb_1__4__2_chanx_left_out[0:10]),
@@ -3814,6 +4039,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__4__2_ccff_tail));
 
 	cbx_1__4_ cbx_4__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chanx_left_in(sb_1__4__2_chanx_right_out[0:10]),
 		.chanx_right_in(sb_4__4__0_chanx_left_out[0:10]),
@@ -3840,6 +4069,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cbx_1__4__3_ccff_tail));
 
 	cby_0__1_ cby_0__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_0__0__0_chany_top_out[0:10]),
 		.chany_top_in(sb_0__1__0_chany_bottom_out[0:10]),
@@ -3851,6 +4084,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_0__1__0_ccff_tail));
 
 	cby_0__1_ cby_0__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_0__1__0_chany_top_out[0:10]),
 		.chany_top_in(sb_0__1__1_chany_bottom_out[0:10]),
@@ -3862,6 +4099,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_0__1__1_ccff_tail));
 
 	cby_0__1_ cby_0__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_0__1__1_chany_top_out[0:10]),
 		.chany_top_in(sb_0__1__2_chany_bottom_out[0:10]),
@@ -3873,6 +4114,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_0__1__2_ccff_tail));
 
 	cby_0__1_ cby_0__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_0__1__2_chany_top_out[0:10]),
 		.chany_top_in(sb_0__4__0_chany_bottom_out[0:10]),
@@ -3884,6 +4129,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_0__1__3_ccff_tail));
 
 	cby_1__1_ cby_1__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__0__0_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__0_chany_bottom_out[0:10]),
@@ -3910,6 +4159,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__0_ccff_tail));
 
 	cby_1__1_ cby_1__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__0_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__1_chany_bottom_out[0:10]),
@@ -3936,6 +4189,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__1_ccff_tail));
 
 	cby_1__1_ cby_1__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__1_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__2_chany_bottom_out[0:10]),
@@ -3962,6 +4219,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__2_ccff_tail));
 
 	cby_1__1_ cby_1__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__2_chany_top_out[0:10]),
 		.chany_top_in(sb_1__4__0_chany_bottom_out[0:10]),
@@ -3988,6 +4249,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__3_ccff_tail));
 
 	cby_1__1_ cby_2__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__0__1_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__3_chany_bottom_out[0:10]),
@@ -4014,6 +4279,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__4_ccff_tail));
 
 	cby_1__1_ cby_2__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__3_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__4_chany_bottom_out[0:10]),
@@ -4040,6 +4309,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__5_ccff_tail));
 
 	cby_1__1_ cby_2__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__4_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__5_chany_bottom_out[0:10]),
@@ -4066,6 +4339,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__6_ccff_tail));
 
 	cby_1__1_ cby_2__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__5_chany_top_out[0:10]),
 		.chany_top_in(sb_1__4__1_chany_bottom_out[0:10]),
@@ -4092,6 +4369,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__7_ccff_tail));
 
 	cby_1__1_ cby_3__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__0__2_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__6_chany_bottom_out[0:10]),
@@ -4118,6 +4399,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__8_ccff_tail));
 
 	cby_1__1_ cby_3__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__6_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__7_chany_bottom_out[0:10]),
@@ -4144,6 +4429,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__9_ccff_tail));
 
 	cby_1__1_ cby_3__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__7_chany_top_out[0:10]),
 		.chany_top_in(sb_1__1__8_chany_bottom_out[0:10]),
@@ -4170,6 +4459,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__10_ccff_tail));
 
 	cby_1__1_ cby_3__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_1__1__8_chany_top_out[0:10]),
 		.chany_top_in(sb_1__4__2_chany_bottom_out[0:10]),
@@ -4196,6 +4489,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__11_ccff_tail));
 
 	cby_1__1_ cby_4__1_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_4__0__0_chany_top_out[0:10]),
 		.chany_top_in(sb_4__1__0_chany_bottom_out[0:10]),
@@ -4222,6 +4519,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__12_ccff_tail));
 
 	cby_1__1_ cby_4__2_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_4__1__0_chany_top_out[0:10]),
 		.chany_top_in(sb_4__1__1_chany_bottom_out[0:10]),
@@ -4248,6 +4549,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__13_ccff_tail));
 
 	cby_1__1_ cby_4__3_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_4__1__1_chany_top_out[0:10]),
 		.chany_top_in(sb_4__1__2_chany_bottom_out[0:10]),
@@ -4274,6 +4579,10 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 		.ccff_tail(cby_1__1__14_ccff_tail));
 
 	cby_1__1_ cby_4__4_ (
+`ifdef USE_POWER_PINS 
+        .vccd1(vccd1),
+        .vssd1(vssd1),
+`endif
 		.prog_clk(prog_clk),
 		.chany_bottom_in(sb_4__1__2_chany_top_out[0:10]),
 		.chany_top_in(sb_4__4__0_chany_bottom_out[0:10]),
@@ -4422,7 +4731,9 @@ wire [0:10] sb_4__4__0_chany_bottom_out;
 endmodule
 // ----- END Verilog module for fpga_top -----
 
+//----- Default net type -----
+`default_nettype none
 
 
-`default_nettype wire
+
 
