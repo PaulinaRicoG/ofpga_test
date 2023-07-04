@@ -21,9 +21,11 @@ OPENLANE_IMAGE_NAME ?= efabless/openlane:$(OPENLANE_TAG)
 designs = $(shell find * -maxdepth 0 -type d)
 current_design = null
 
+# "CREATE_REPRODUCIBLE_FROM_SCRIPT=openroad/pdn.tcl flow.tcl 
+
 openlane_cmd = \
 	"flow.tcl \
-	-design $$(realpath ./$*) \
+    -design $$(realpath ./$*) \
 	-save_path $$(realpath ..) \
 	-save \
 	-tag $(OPENLANE_RUN_TAG) \

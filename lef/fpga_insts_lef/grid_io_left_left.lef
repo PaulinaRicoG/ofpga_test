@@ -1,0 +1,114 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO grid_io_left_left
+  CLASS BLOCK ;
+  FOREIGN grid_io_left_left ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 100.000 BY 100.000 ;
+  PIN ccff_head
+    PORT
+      LAYER met2 ;
+        RECT 96.690 96.000 96.970 100.000 ;
+    END
+  END ccff_head
+  PIN ccff_tail
+    PORT
+      LAYER met2 ;
+        RECT 48.390 0.000 48.670 4.000 ;
+    END
+  END ccff_tail
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR
+    PORT
+      LAYER met3 ;
+        RECT 96.000 47.640 100.000 48.240 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN
+    PORT
+      LAYER met3 ;
+        RECT 0.000 51.040 4.000 51.640 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT
+    PORT
+      LAYER met2 ;
+        RECT 0.090 0.000 0.370 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT
+  PIN prog_clk
+    PORT
+      LAYER met2 ;
+        RECT 0.090 96.000 0.370 100.000 ;
+    END
+  END prog_clk
+  PIN right_width_0_height_0_subtile_0__pin_inpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 48.390 96.000 48.670 100.000 ;
+    END
+  END right_width_0_height_0_subtile_0__pin_inpad_0_
+  PIN right_width_0_height_0_subtile_0__pin_outpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 96.690 0.000 96.970 4.000 ;
+    END
+  END right_width_0_height_0_subtile_0__pin_outpad_0_
+  PIN vccd1
+    PORT
+      LAYER met4 ;
+        RECT 82.400 10.640 84.000 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 60.205 10.640 61.805 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 38.010 10.640 39.610 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 15.815 10.640 17.415 87.280 ;
+    END
+  END vccd1
+  PIN vssd1
+    PORT
+      LAYER met4 ;
+        RECT 93.495 10.640 95.095 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 71.300 10.640 72.900 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 49.105 10.640 50.705 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 26.910 10.640 28.510 87.280 ;
+    END
+  END vssd1
+  OBS
+      LAYER li1 ;
+        RECT 5.520 10.795 94.300 87.125 ;
+      LAYER met1 ;
+        RECT 0.070 10.640 96.990 87.280 ;
+      LAYER met2 ;
+        RECT 0.650 95.720 48.110 96.000 ;
+        RECT 48.950 95.720 96.410 96.000 ;
+        RECT 0.100 4.280 96.960 95.720 ;
+        RECT 0.650 4.000 48.110 4.280 ;
+        RECT 48.950 4.000 96.410 4.280 ;
+      LAYER met3 ;
+        RECT 4.000 52.040 96.000 87.205 ;
+        RECT 4.400 50.640 96.000 52.040 ;
+        RECT 4.000 48.640 96.000 50.640 ;
+        RECT 4.000 47.240 95.600 48.640 ;
+        RECT 4.000 10.715 96.000 47.240 ;
+  END
+END grid_io_left_left
+END LIBRARY
+

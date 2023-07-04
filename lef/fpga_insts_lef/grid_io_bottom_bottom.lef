@@ -1,0 +1,304 @@
+VERSION 5.7 ;
+  NOWIREEXTENSIONATPIN ON ;
+  DIVIDERCHAR "/" ;
+  BUSBITCHARS "[]" ;
+MACRO grid_io_bottom_bottom
+  CLASS BLOCK ;
+  FOREIGN grid_io_bottom_bottom ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 100.000 BY 100.000 ;
+  PIN ccff_head
+    PORT
+      LAYER met3 ;
+        RECT 0.000 23.840 4.000 24.440 ;
+    END
+  END ccff_head
+  PIN ccff_tail
+    PORT
+      LAYER met2 ;
+        RECT 93.470 96.000 93.750 100.000 ;
+    END
+  END ccff_tail
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[0]
+    PORT
+      LAYER met2 ;
+        RECT 45.170 0.000 45.450 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[0]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[1]
+    PORT
+      LAYER met2 ;
+        RECT 32.290 96.000 32.570 100.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[1]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[2]
+    PORT
+      LAYER met3 ;
+        RECT 0.000 37.440 4.000 38.040 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[2]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[3]
+    PORT
+      LAYER met3 ;
+        RECT 96.000 30.640 100.000 31.240 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[3]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[4]
+    PORT
+      LAYER met2 ;
+        RECT 58.050 96.000 58.330 100.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[4]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_DIR[5]
+    PORT
+      LAYER met2 ;
+        RECT 93.470 0.000 93.750 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_DIR[5]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[0]
+    PORT
+      LAYER met3 ;
+        RECT 96.000 57.840 100.000 58.440 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[0]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[1]
+    PORT
+      LAYER met2 ;
+        RECT 80.590 0.000 80.870 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[1]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[2]
+    PORT
+      LAYER met3 ;
+        RECT 96.000 68.040 100.000 68.640 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[2]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[3]
+    PORT
+      LAYER met3 ;
+        RECT 0.000 10.240 4.000 10.840 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[3]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[4]
+    PORT
+      LAYER met2 ;
+        RECT 0.090 0.000 0.370 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[4]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_IN[5]
+    PORT
+      LAYER met2 ;
+        RECT 67.710 96.000 67.990 100.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_IN[5]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[0]
+    PORT
+      LAYER met2 ;
+        RECT 80.590 96.000 80.870 100.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[0]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[1]
+    PORT
+      LAYER met3 ;
+        RECT 0.000 74.840 4.000 75.440 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[1]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[2]
+    PORT
+      LAYER met2 ;
+        RECT 19.410 96.000 19.690 100.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[2]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[3]
+    PORT
+      LAYER met2 ;
+        RECT 70.930 0.000 71.210 4.000 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[3]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[4]
+    PORT
+      LAYER met3 ;
+        RECT 0.000 85.040 4.000 85.640 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[4]
+  PIN gfpga_pad_EMBEDDED_IO_SOC_OUT[5]
+    PORT
+      LAYER met3 ;
+        RECT 96.000 6.840 100.000 7.440 ;
+    END
+  END gfpga_pad_EMBEDDED_IO_SOC_OUT[5]
+  PIN prog_clk
+    PORT
+      LAYER met2 ;
+        RECT 9.750 0.000 10.030 4.000 ;
+    END
+  END prog_clk
+  PIN top_width_0_height_0_subtile_0__pin_inpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 22.630 0.000 22.910 4.000 ;
+    END
+  END top_width_0_height_0_subtile_0__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_0__pin_outpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 9.750 96.000 10.030 100.000 ;
+    END
+  END top_width_0_height_0_subtile_0__pin_outpad_0_
+  PIN top_width_0_height_0_subtile_1__pin_inpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 96.000 17.040 100.000 17.640 ;
+    END
+  END top_width_0_height_0_subtile_1__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_1__pin_outpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 35.510 0.000 35.790 4.000 ;
+    END
+  END top_width_0_height_0_subtile_1__pin_outpad_0_
+  PIN top_width_0_height_0_subtile_2__pin_inpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 96.000 81.640 100.000 82.240 ;
+    END
+  END top_width_0_height_0_subtile_2__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_2__pin_outpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 96.000 95.240 100.000 95.840 ;
+    END
+  END top_width_0_height_0_subtile_2__pin_outpad_0_
+  PIN top_width_0_height_0_subtile_3__pin_inpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 0.000 61.240 4.000 61.840 ;
+    END
+  END top_width_0_height_0_subtile_3__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_3__pin_outpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 45.170 96.000 45.450 100.000 ;
+    END
+  END top_width_0_height_0_subtile_3__pin_outpad_0_
+  PIN top_width_0_height_0_subtile_4__pin_inpad_0_
+    PORT
+      LAYER met2 ;
+        RECT 58.050 0.000 58.330 4.000 ;
+    END
+  END top_width_0_height_0_subtile_4__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_4__pin_outpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 0.000 47.640 4.000 48.240 ;
+    END
+  END top_width_0_height_0_subtile_4__pin_outpad_0_
+  PIN top_width_0_height_0_subtile_5__pin_inpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 0.000 98.640 4.000 99.240 ;
+    END
+  END top_width_0_height_0_subtile_5__pin_inpad_0_
+  PIN top_width_0_height_0_subtile_5__pin_outpad_0_
+    PORT
+      LAYER met3 ;
+        RECT 96.000 44.240 100.000 44.840 ;
+    END
+  END top_width_0_height_0_subtile_5__pin_outpad_0_
+  PIN vccd1
+    PORT
+      LAYER met4 ;
+        RECT 82.400 10.640 84.000 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 60.205 10.640 61.805 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 38.010 10.640 39.610 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 15.815 10.640 17.415 87.280 ;
+    END
+  END vccd1
+  PIN vssd1
+    PORT
+      LAYER met4 ;
+        RECT 93.495 10.640 95.095 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 71.300 10.640 72.900 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 49.105 10.640 50.705 87.280 ;
+    END
+    PORT
+      LAYER met4 ;
+        RECT 26.910 10.640 28.510 87.280 ;
+    END
+  END vssd1
+  OBS
+      LAYER li1 ;
+        RECT 5.520 10.795 94.300 87.125 ;
+      LAYER met1 ;
+        RECT 0.070 10.640 96.070 87.280 ;
+      LAYER met2 ;
+        RECT 0.100 95.720 9.470 99.125 ;
+        RECT 10.310 95.720 19.130 99.125 ;
+        RECT 19.970 95.720 32.010 99.125 ;
+        RECT 32.850 95.720 44.890 99.125 ;
+        RECT 45.730 95.720 57.770 99.125 ;
+        RECT 58.610 95.720 67.430 99.125 ;
+        RECT 68.270 95.720 80.310 99.125 ;
+        RECT 81.150 95.720 93.190 99.125 ;
+        RECT 94.030 95.720 96.050 99.125 ;
+        RECT 0.100 4.280 96.050 95.720 ;
+        RECT 0.650 4.000 9.470 4.280 ;
+        RECT 10.310 4.000 22.350 4.280 ;
+        RECT 23.190 4.000 35.230 4.280 ;
+        RECT 36.070 4.000 44.890 4.280 ;
+        RECT 45.730 4.000 57.770 4.280 ;
+        RECT 58.610 4.000 70.650 4.280 ;
+        RECT 71.490 4.000 80.310 4.280 ;
+        RECT 81.150 4.000 93.190 4.280 ;
+        RECT 94.030 4.000 96.050 4.280 ;
+      LAYER met3 ;
+        RECT 4.400 98.240 96.000 99.105 ;
+        RECT 4.000 96.240 96.000 98.240 ;
+        RECT 4.000 94.840 95.600 96.240 ;
+        RECT 4.000 86.040 96.000 94.840 ;
+        RECT 4.400 84.640 96.000 86.040 ;
+        RECT 4.000 82.640 96.000 84.640 ;
+        RECT 4.000 81.240 95.600 82.640 ;
+        RECT 4.000 75.840 96.000 81.240 ;
+        RECT 4.400 74.440 96.000 75.840 ;
+        RECT 4.000 69.040 96.000 74.440 ;
+        RECT 4.000 67.640 95.600 69.040 ;
+        RECT 4.000 62.240 96.000 67.640 ;
+        RECT 4.400 60.840 96.000 62.240 ;
+        RECT 4.000 58.840 96.000 60.840 ;
+        RECT 4.000 57.440 95.600 58.840 ;
+        RECT 4.000 48.640 96.000 57.440 ;
+        RECT 4.400 47.240 96.000 48.640 ;
+        RECT 4.000 45.240 96.000 47.240 ;
+        RECT 4.000 43.840 95.600 45.240 ;
+        RECT 4.000 38.440 96.000 43.840 ;
+        RECT 4.400 37.040 96.000 38.440 ;
+        RECT 4.000 31.640 96.000 37.040 ;
+        RECT 4.000 30.240 95.600 31.640 ;
+        RECT 4.000 24.840 96.000 30.240 ;
+        RECT 4.400 23.440 96.000 24.840 ;
+        RECT 4.000 18.040 96.000 23.440 ;
+        RECT 4.000 16.640 95.600 18.040 ;
+        RECT 4.000 11.240 96.000 16.640 ;
+        RECT 4.400 9.840 96.000 11.240 ;
+        RECT 4.000 7.840 96.000 9.840 ;
+        RECT 4.000 6.975 95.600 7.840 ;
+  END
+END grid_io_bottom_bottom
+END LIBRARY
+
